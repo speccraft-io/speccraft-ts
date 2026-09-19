@@ -1,0 +1,21 @@
+{
+  "name": "speccraft",
+  "version": "0.0.0",
+  "description": "Write specs in TypeScript and check them exhaustively - guarded actions, invariants, counterexample traces.",
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc",
+    "typecheck": "tsc --noEmit"
+  },
+  "repository": "github:speccraft-io/speccraft-ts",
+  "homepage": "https://speccraft.io",
+  "license": "MIT",
+  "devDependencies": {
+    "typescript": "^5.6.0"
+  }
+}
