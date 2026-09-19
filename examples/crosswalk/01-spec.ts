@@ -13,7 +13,7 @@ export function newState(): State {
   return { carLight: 'green', walkSignal: 'dontwalk', requested: false };
 }
 
-function actions(grantWalkGuard: (s: State) => boolean): Action<State>[] {
+export function actions(grantWalkGuard: (s: State) => boolean): Action<State>[] {
   return [
     {
       name: 'press button',
@@ -57,17 +57,8 @@ export const INVARIANTS: Invariant<State>[] = [
 
 // The bug: grants a walk the moment one is requested and no walk is already
 // showing. It never checks that the car light has actually turned red.
-export const buggySpec: Spec<State> = {
+export const spec: Spec<State> = {
   init: newState,
   actions: actions((s: State): boolean => s.requested && s.walkSignal === 'dontwalk'),
-  invariants: INVARIANTS,
-};
-
-// The fix: also require the car light to be red before granting a walk.
-export const fixedSpec: Spec<State> = {
-  init: newState,
-  actions: actions(
-    (s: State): boolean => s.requested && s.walkSignal === 'dontwalk' && s.carLight === 'red',
-  ),
   invariants: INVARIANTS,
 };
