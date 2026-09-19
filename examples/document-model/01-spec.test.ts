@@ -1,17 +1,12 @@
 import { describe, expect, it } from 'vitest';
 import { explore } from '../../src/index.js';
-import { ACTIONS, INVARIANTS, REFUTED, newState, type State } from './model.js';
+import { REFUTED, spec } from './01-spec.js';
 
-describe('document-model example', () => {
+describe('step 1: the spec, matched against the case study', () => {
   it(
-    'matches the case study exactly: every invariant holds, every refuted belief stays false',
+    'every invariant holds, every refuted belief stays false',
     () => {
-      const result = explore({
-        init: newState,
-        actions: ACTIONS,
-        invariants: [...INVARIANTS, ...REFUTED],
-        stuck: (s: State) => s.archiveRequested || s.summaryRequested || s.submitRequested,
-      });
+      const result = explore(spec);
 
       expect(result.visitedCount).toBe(283951);
       expect(result.endings.length).toBe(1);

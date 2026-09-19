@@ -1,17 +1,31 @@
 # Document model example
 
-A real spec, not a toy, run through `explore()`. It ports a spec from an
-internal case study, so the library is checked against a document that
-already has a known-correct answer: 283,951 reachable states, 15 invariants
-that all hold, 4 beliefs that are known to be false and must stay false.
+A real spec, not a toy, taken through the whole method: proven correct with `explore()`, then checked against a real implementation with `checkConformance()`. It ports a spec from an internal case study with a known-correct answer (283,951 reachable states, 15 invariants that all hold, 4 beliefs that are known to be false and must stay false), so the library itself is being checked against a document that already has ground truth.
 
-The full story behind this spec, how it was found and what it caught, is
-written up at
-[speccraft.io/case-study-config-document-workflow](https://speccraft.io/case-study-config-document-workflow/).
+The full story behind the spec, how it was found and what it caught, is written up at [speccraft.io/case-study-config-document-workflow](https://speccraft.io/case-study-config-document-workflow/). This README covers what the numbered files here add on top of that: an independently-written implementation, and a bug conformance testing catches that model checking alone cannot.
 
-Run it: `npx tsx run.ts` (from this folder). Run `model.test.ts` with
-`pnpm test` from the package root; it pins those exact numbers as a
-regression check.
+Run the whole story: `npx tsx run.ts` (from this folder). Each step also has its own test file, run with `pnpm test` from the package root.
+
+## Step 1: the spec, matched against the case study (`01-spec.ts`, `01-spec.test.ts`)
+
+The spec itself - variables, actions, invariants, and four known-false beliefs kept on purpose (see below). `explore()` pins the exact numbers from the case study: 283,951 reachable states, every invariant holding, every refuted belief still false.
+
+## Step 2: a real implementation, checked against the proven-correct spec (`02-implementation.ts`, `02-conformance.test.ts`)
+
+A spec being proven correct says nothing about whether the code that is supposed to implement it actually does. `02-implementation.ts` is an independently-written version of the same 23 actions - same effects, no guards (conformance checking only needs to know what an action *does*, since it only ever replays actions the spec has already decided are legal).
+
+It has a bug the spec never had: renaming the document correctly cancels an in-flight name detection, but forgets that a summary build also reads the current name and needs canceling too. `checkConformance()` drives the implementation through every transition the spec says is legal and finds the exact divergence in seconds, not after walking all 283,951 states:
+
+```
+MISMATCH on "rename document to n2"
+trace: upload f1 -> conversion finished f1 -> default name applied -> summary started -> rename document to n2
+expected.summaryGenerating: false
+actual.summaryGenerating:   true
+```
+
+## Step 3: the fixed implementation (`03-implementation-fixed.ts`, `03-conformance.test.ts`)
+
+Same implementation, one added clause: cancel the summary build too when the name actually changes. `checkConformance()` now walks all 283,951 reachable states with no mismatch - the real code and the proven-correct spec agree everywhere.
 
 ## Product requirements
 

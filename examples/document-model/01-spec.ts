@@ -1,4 +1,4 @@
-import type { Action, Invariant } from '../../src/index.js';
+import type { Action, Invariant, Spec } from '../../src/index.js';
 
 type FileStatus = 'absent' | 'converting' | 'converted' | 'removed';
 export interface State {
@@ -385,3 +385,10 @@ export const REFUTED: Invariant<State>[] = [
       || summaryMatches(s)
   },
 ]
+
+export const spec: Spec<State> = {
+  init: newState,
+  actions: ACTIONS,
+  invariants: [...INVARIANTS, ...REFUTED],
+  stuck: (s: State) => s.archiveRequested || s.summaryRequested || s.submitRequested,
+};

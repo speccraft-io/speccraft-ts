@@ -1,35 +1,38 @@
-import { explore } from '../../src/index.js';
-import { ACTIONS, INVARIANTS, REFUTED, newState, type State } from './model.js';
+import { checkConformance, explore } from '../../src/index.js';
+import { REFUTED, spec } from './01-spec.js';
+import { implementation as buggyImpl } from './02-implementation.js';
+import { implementation as fixedImpl } from './03-implementation-fixed.js';
 
-const result = explore({
-  init: newState,
-  actions: ACTIONS,
-  invariants: [...INVARIANTS, ...REFUTED],
-  stuck: (s: State) => s.archiveRequested || s.summaryRequested || s.submitRequested,
-});
-
+console.log('Step 1: the spec, matched against the case study');
+const step1 = explore(spec);
 const refutedNames = new Set(REFUTED.map((i) => i.name));
-const failed = result.invariants.filter((i) => !refutedNames.has(i.name) && !i.holds);
-const noLongerRefuted = result.invariants.filter((i) => refutedNames.has(i.name) && i.holds);
+const failed = step1.invariants.filter((i) => !refutedNames.has(i.name) && !i.holds);
+const noLongerRefuted = step1.invariants.filter((i) => refutedNames.has(i.name) && i.holds);
+console.log(`  Ending: ${step1.endings.length}`);
+console.log(`  Stuck: ${step1.stuck.length}`);
+console.log(`  Visited: ${step1.visitedCount}`);
+console.log(`  Failed invariants: ${failed.length}`);
+console.log(
+  noLongerRefuted.length === 0
+    ? `  Known-false beliefs: all ${REFUTED.length} confirmed still false (as expected)`
+    : `  WARNING: ${noLongerRefuted.length} known-false belief(s) now hold`,
+);
 
-console.log(`Ending: ${result.endings.length}`);
-console.log(`Stuck: ${result.stuck.length}`);
-console.log(`Visited: ${result.visitedCount}`);
-console.log(`Failed invariants: ${failed.length} out of ${INVARIANTS.length}`);
-if (noLongerRefuted.length === 0) {
-  console.log(`Known-false beliefs: all ${REFUTED.length} confirmed still false (as expected)`);
+console.log('\nStep 2: checking a real implementation against the proven-correct spec');
+const step2 = checkConformance(spec, buggyImpl);
+if (step2.mismatch === undefined) {
+  console.log('  conforms on every reachable transition');
 } else {
-  console.log(`WARNING: ${noLongerRefuted.length} known-false belief(s) now hold - the model changed:`);
-  for (const invariant of noLongerRefuted) {
-    console.log(`  ${invariant.name}`);
-  }
+  console.log(`  MISMATCH on "${step2.mismatch.action}"`);
+  console.log(`  trace: ${step2.mismatch.trace.join(' -> ')}`);
+  console.log(`  expected.summaryGenerating: ${String(step2.mismatch.expected.summaryGenerating)}`);
+  console.log(`  actual.summaryGenerating:   ${String(step2.mismatch.actual.summaryGenerating)}`);
 }
-for (const invariant of failed) {
-  console.log(`\n${invariant.name}`);
-  if (invariant.counterexample === undefined) {
-    continue;
-  }
-  for (const action of invariant.counterexample) {
-    console.log(`  ${action}`);
-  }
-}
+
+console.log('\nStep 3: the fixed implementation');
+const step3 = checkConformance(spec, fixedImpl);
+console.log(
+  step3.mismatch === undefined
+    ? `  conforms on all ${String(step3.visitedCount)} reachable states`
+    : '  still mismatched',
+);
