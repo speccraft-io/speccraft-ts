@@ -24,6 +24,22 @@ const result = explore(spec);
 
 `explore` does a breadth-first search over every reachable state. Each invariant is checked in every state, and the first violation comes back with the shortest action trace from `init()` to the failing state. A dead end (no action's guard holds) lands in `endings`, or in `stuck` if you pass a `stuck(s)` predicate on the spec to flag dead ends that mean something is waiting forever.
 
+A spec being proven correct says nothing about whether the code that's supposed to implement it actually does. `checkConformance` walks the same reachable-state graph, but drives a real implementation through it alongside the spec and checks that they agree at every step:
+
+```ts
+import { checkConformance } from 'speccraft';
+
+const result = checkConformance(spec, {
+  init: () => realImplementation.newInstance(),
+  apply: (r, actionName) => realImplementation.run(r, actionName),
+  project: (r) => realImplementation.toSpecShape(r),
+});
+// result.visitedCount
+// result.mismatch?: { trace, action, expected, actual }
+```
+
+`apply` must return a new state rather than mutate its input - the same state gets replayed against every action whose guard holds there, not just the first one tried. `project` maps the real implementation's own state shape down to the spec's, so the real system doesn't have to mirror the spec's representation.
+
 Part of [SpecCraft](https://speccraft.io).
 
 ## Development
@@ -35,9 +51,11 @@ pnpm test
 pnpm build
 ```
 
-`examples/crosswalk/` is the small demo: a one-clause bug that lets a pedestrian get a walk signal while cars still have the green light, found in two steps.
+Both examples are numbered step by step - write the spec, find a bug with `explore()`, fix it, write a real implementation, catch a bug in *that* with `checkConformance()`, fix it - so the files read top to bottom like a workbook.
 
-`examples/document-model/` ports a real spec (from a case study, not a toy) through `explore()` end to end: `run.ts` prints the same stats a hand-rolled checker would, and `model.test.ts` pins the exact numbers (283,951 reachable states, every invariant holding, every refuted belief still false) as a regression test.
+`examples/crosswalk/` is the small one: a one-clause guard bug, then an implementation bug conformance testing catches that the spec never had.
+
+`examples/document-model/` ports a real spec (from a case study, not a toy) with a known-correct answer (283,951 reachable states, 15 invariants holding, 4 refuted beliefs staying false), then checks an independently-written implementation against it.
 
 ## Example ideas
 
@@ -51,3 +69,13 @@ pnpm build
 - Idempotency key cache - request arrives, checks cache, processes, stores result; invariant duplicate requests never double-process.
 - Shopping cart checkout with inventory reservation - reserve on add-to-cart, release on timeout/cancel, commit on pay; invariant reserved plus available never exceeds stock.
 - Simple saga / two-phase workflow with compensation - step A, step B, compensate A if B fails; invariant no state where B succeeded and A's compensation also ran.
+
+## Roadmap
+
+- Ship `speccraft@0.1.0` to npm. Blocked: the bare name has a prior unrelated publish/unpublish history on the registry, which needs resolving before the `workflow_dispatch` publish can just be retried.
+- Data nondeterminism: let an action's `effect` return multiple possible next states, not just one.
+- State fingerprinting instead of `JSON.stringify` keys, so larger state spaces don't hit memory walls as fast.
+- Conformance testing is in as `checkConformance`; next is checking a sampled subset of transitions for state spaces too large to walk exhaustively, and reporting more than just the first mismatch.
+- Basic liveness: cycle/SCC detection over the reachable-state graph for the common "eventually P" and "P leads to Q" patterns, without taking on full LTL or fairness.
+- speccraft-go: a Go port of the engine sharing the same JSON state, trace, and counterexample formats.
+- A trace explorer for browsing counterexample traces instead of reading raw JSON.
