@@ -36,24 +36,25 @@ export function explore<S>(spec: Spec<S>): ExploreResult<S> {
   const endings: S[] = [];
   const stuck: S[] = [];
   const traces = new Map<string, { parent: string; action: string }>();
-  const counterexamples = new Map<string, string[]>();
+  const counterexamples = new Map<Invariant<S>, string[]>();
 
   // queue grows during iteration; for-of re-reads .length on every step, so
   // this walks newly pushed states too, breadth-first.
   for (const s of queue) {
+    const sKey = JSON.stringify(s);
     let numActions = 0;
 
     for (const invariant of spec.invariants) {
-      if (!invariant.check(s) && !counterexamples.has(invariant.name)) {
+      if (!invariant.check(s) && !counterexamples.has(invariant)) {
         const trace: string[] = [];
-        let key = JSON.stringify(s);
+        let key = sKey;
         let step = traces.get(key);
         while (step !== undefined) {
           trace.unshift(step.action);
           key = step.parent;
           step = traces.get(key);
         }
-        counterexamples.set(invariant.name, trace);
+        counterexamples.set(invariant, trace);
       }
     }
 
@@ -65,7 +66,7 @@ export function explore<S>(spec: Spec<S>): ExploreResult<S> {
         if (!visited.has(nextKey)) {
           queue.push(next);
           visited.add(nextKey);
-          traces.set(nextKey, { parent: JSON.stringify(s), action: action.name });
+          traces.set(nextKey, { parent: sKey, action: action.name });
         }
       }
     }
@@ -84,7 +85,7 @@ export function explore<S>(spec: Spec<S>): ExploreResult<S> {
     endings,
     stuck,
     invariants: spec.invariants.map((invariant): InvariantResult => {
-      const counterexample = counterexamples.get(invariant.name);
+      const counterexample = counterexamples.get(invariant);
       return counterexample === undefined
         ? { name: invariant.name, holds: true }
         : { name: invariant.name, holds: false, counterexample };
