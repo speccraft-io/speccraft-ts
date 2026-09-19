@@ -92,3 +92,83 @@ export function explore<S>(spec: Spec<S>): ExploreResult<S> {
     }),
   };
 }
+
+export interface RealSystem<S, R> {
+  init: () => R;
+  // must return a new R rather than mutating r - the same r is replayed against every action
+  // whose guard holds at that state, not just the one that happened to run first.
+  apply: (r: R, actionName: string) => R;
+  project: (r: R) => S;
+}
+
+export interface ConformanceMismatch<S> {
+  trace: string[];
+  action: string;
+  expected: S;
+  actual: S;
+}
+
+export interface ConformanceResult<S> {
+  visitedCount: number;
+  mismatch?: ConformanceMismatch<S>;
+}
+
+export function checkConformance<S, R>(spec: Spec<S>, real: RealSystem<S, R>): ConformanceResult<S> {
+  const seed = spec.init();
+  const seedKey = JSON.stringify(seed);
+  const seedReal = real.init();
+
+  if (JSON.stringify(real.project(seedReal)) !== seedKey) {
+    return {
+      visitedCount: 1,
+      mismatch: { trace: [], action: 'init', expected: seed, actual: real.project(seedReal) },
+    };
+  }
+
+  const queue: S[] = [seed];
+  const visited = new Set<string>([seedKey]);
+  const realStates = new Map<string, R>([[seedKey, seedReal]]);
+  const traces = new Map<string, { parent: string; action: string }>();
+
+  for (const s of queue) {
+    const sKey = JSON.stringify(s);
+    const r = realStates.get(sKey);
+    if (r === undefined) {
+      throw new Error('unreachable: every queued state was given a real counterpart when it was pushed');
+    }
+
+    for (const action of spec.actions) {
+      if (!action.guard(s)) {
+        continue;
+      }
+
+      const next = action.effect(s);
+      const nextKey = JSON.stringify(next);
+      const nextReal = real.apply(r, action.name);
+
+      if (JSON.stringify(real.project(nextReal)) !== nextKey) {
+        const trace: string[] = [action.name];
+        let key = sKey;
+        let step = traces.get(key);
+        while (step !== undefined) {
+          trace.unshift(step.action);
+          key = step.parent;
+          step = traces.get(key);
+        }
+        return {
+          visitedCount: visited.size,
+          mismatch: { trace, action: action.name, expected: next, actual: real.project(nextReal) },
+        };
+      }
+
+      if (!visited.has(nextKey)) {
+        visited.add(nextKey);
+        realStates.set(nextKey, nextReal);
+        traces.set(nextKey, { parent: sKey, action: action.name });
+        queue.push(next);
+      }
+    }
+  }
+
+  return { visitedCount: visited.size };
+}

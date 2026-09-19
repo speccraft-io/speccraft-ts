@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { explore, type Spec } from './index.js';
+import { checkConformance, explore, type RealSystem, type Spec } from './index.js';
 
 interface CounterState { count: number }
 
@@ -52,5 +52,30 @@ describe('explore', () => {
     const result = explore(spec);
     expect(result.endings).toEqual([]);
     expect(result.stuck).toEqual([{ requested: true, served: false }]);
+  });
+});
+
+describe('checkConformance', () => {
+  // real state is a tally string, not a count - exercises project() doing real work
+  function tally(apply: (r: string) => string): RealSystem<CounterState, string> {
+    return { init: () => '', apply, project: (r) => ({ count: r.length }) };
+  }
+
+  it('finds no mismatch when the real system matches the spec on every reachable transition', () => {
+    const real = tally((r) => `${r}|`);
+    const result = checkConformance(counterSpec(), real);
+    expect(result).toEqual({ visitedCount: 4 });
+  });
+
+  it('reports the full trace to the first mismatch', () => {
+    // drops the third increment: the tally stops growing once it already has two marks
+    const real = tally((r) => (r.length === 2 ? r : `${r}|`));
+    const result = checkConformance(counterSpec(), real);
+    expect(result.mismatch).toEqual({
+      trace: ['inc', 'inc', 'inc'],
+      action: 'inc',
+      expected: { count: 3 },
+      actual: { count: 2 },
+    });
   });
 });
