@@ -1,44 +1,6 @@
 # speccraft
 
-Write specs in TypeScript and check them exhaustively - guarded actions, invariants, counterexample traces.
-
-No new language: the spec is plain TypeScript, the checker explores every reachable state and hands you the exact step-by-step trace when an invariant breaks.
-
-```ts
-import { explore } from 'speccraft';
-
-const spec = {
-  init: () => ({ count: 0 }),
-  actions: [
-    { name: 'inc', guard: (s) => s.count < 5, effect: (s) => ({ count: s.count + 1 }) },
-  ],
-  invariants: [
-    { name: 'bounded', check: (s) => s.count <= 5 },
-  ],
-};
-
-const result = explore(spec);
-// result.visitedCount, result.endings, result.stuck
-// result.invariants: [{ name, holds, counterexample? }]
-```
-
-`explore` does a breadth-first search over every reachable state. Each invariant is checked in every state, and the first violation comes back with the shortest action trace from `init()` to the failing state. A dead end (no action's guard holds) lands in `endings`, or in `stuck` if you pass a `stuck(s)` predicate on the spec to flag dead ends that mean something is waiting forever.
-
-A spec being proven correct says nothing about whether the code that's supposed to implement it actually does. `checkConformance` walks the same reachable-state graph, but drives a real implementation through it alongside the spec and checks that they agree at every step:
-
-```ts
-import { checkConformance } from 'speccraft';
-
-const result = checkConformance(spec, {
-  init: () => realImplementation.newInstance(),
-  apply: (r, actionName) => realImplementation.run(r, actionName),
-  project: (r) => realImplementation.toSpecShape(r),
-});
-// result.visitedCount
-// result.mismatch?: { trace, action, expected, actual }
-```
-
-`apply` must return a new state rather than mutate its input - the same state gets replayed against every action whose guard holds there, not just the first one tried. `project` maps the real implementation's own state shape down to the spec's, so the real system doesn't have to mirror the spec's representation.
+Write specs in TypeScript and check them exhaustively.
 
 Part of [SpecCraft](https://speccraft.io).
 
@@ -50,12 +12,6 @@ pnpm typecheck
 pnpm test
 pnpm build
 ```
-
-Both examples are numbered step by step - write the spec, find a bug with `explore()`, fix it, write a real implementation, catch a bug in *that* with `checkConformance()`, fix it - so the files read top to bottom like a workbook.
-
-`examples/crosswalk/` is the small one: a one-clause guard bug, then an implementation bug conformance testing catches that the spec never had.
-
-`examples/document-model/` ports a real spec (from a case study, not a toy) with a known-correct answer (283,951 reachable states, 15 invariants holding, 4 refuted beliefs staying false), then checks an independently-written implementation against it.
 
 ## Example ideas
 
