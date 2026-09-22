@@ -9,7 +9,7 @@ Model checker as a TypeScript library. A spec is plain TS: initial state, action
 - TS strictness and eslint rules are copied from the strictest project across the author's other repos, minus its `functional`-plugin model/ boundary rules, which are specific to that project's architecture.
 - `tsconfig.base.json` holds the shared strict/module-hygiene flags; `tsconfig.json` (typecheck, includes `src` + `examples`) and `tsconfig.build.json` (emits `dist` from `src` only, excludes `*.test.ts`) both extend it.
 - `examples/` holds runnable specs that exercise the library end to end; not part of the published package.
-- npm package name is `speccraft` (bare, no suffix); repo name carries the `-ts`.
+- npm package name is `@speccraft-io/core`, scoped under the `speccraft-io` npm org; repo name carries the `-ts`.
 
 ## Git
 

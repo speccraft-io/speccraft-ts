@@ -28,7 +28,7 @@ pnpm build
 
 ## Roadmap
 
-- Ship `speccraft@0.1.0` to npm. Blocked: the bare name has a prior unrelated publish/unpublish history on the registry, which needs resolving before the `workflow_dispatch` publish can just be retried.
+- Ship `@speccraft-io/core@0.1.0` to npm.
 - Data nondeterminism: let an action's `effect` return multiple possible next states, not just one.
 - State fingerprinting instead of `JSON.stringify` keys, so larger state spaces don't hit memory walls as fast.
 - Conformance testing is in as `checkConformance`; next is checking a sampled subset of transitions for state spaces too large to walk exhaustively, and reporting more than just the first mismatch.

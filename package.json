@@ -1,5 +1,5 @@
 {
-  "name": "speccraft",
+  "name": "@speccraft-io/core",
   "version": "0.1.0",
   "description": "Write specs in TypeScript and check them exhaustively - guarded actions, invariants, counterexample traces.",
   "type": "module",
