@@ -2,7 +2,7 @@
 
 Write specs in TypeScript and check them exhaustively.
 
-Part of [SpecCraft](https://speccraft.io).
+Part of [SpecCraft](https://speccraft.io). On npm as [`@speccraft-io/core`](https://www.npmjs.com/package/@speccraft-io/core).
 
 ## Development
 
