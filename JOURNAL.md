@@ -201,3 +201,8 @@ research on existing libraries, stateproof (https://github.com/HexaField/statepr
   - speccraft.io reorganized: "SpecCraft vs TS tools" (an overview plus pages for fast-check, Hegel, Effect, fake
     timers, and one page for the other TS tools) and "Non-TS tools" (a comparison page for TLA+, Quint, Stateright,
     Coyote and the rest, next to the Lean, Dafny and Quint try-it pages).
+  - A last pass through Bluesky, Reddit (through Google), and Japanese, Chinese and Korean communities. No new model
+    checker for TypeScript. Small new neighbors: Thales (a TypeScript subset compiled to Lean), pabst (JSDoc
+    properties checked by fast-check), and mizchi's ts-fuzzing, chaosbringer and dspec.
+  - Demand signals: Reddit threads asking how to test race conditions in webhooks and async code, and Japanese
+    articles checking TypeScript workflows by hand with Lean, TLA+ or Quint, with no TypeScript tool for it.
