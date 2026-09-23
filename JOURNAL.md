@@ -191,3 +191,13 @@ research on existing libraries, stateproof (https://github.com/HexaField/statepr
     small temporal operator names and default properties (Bombadil).
   - speccraft.io: pages for stifinder, effect-machine and Bombadil, the rest added to the All tools table, and the
     positioning map split into two: TypeScript tools only, and all languages.
+  - fast-check had been missed, because the searches looked for model checkers. A third search started from
+    popularity instead and widened the radius to every correctness tool a TypeScript team meets: property testing,
+    fuzzing, static verification, runtime verification, schemas. Nothing popular searches every state. The popular
+    neighbors control time (fake timers, about 250M downloads a month), prevent bugs by construction (Effect),
+    sample inputs (fast-check, Hegel from the Hypothesis authors), test the tests (Stryker), or check data shape
+    (zod and other schema libraries).
+  - Gaps found in TypeScript: no maintained linearizability checker, LTL runtime monitor, or session-types library.
+  - speccraft.io reorganized: "SpecCraft vs TS tools" (an overview plus pages for fast-check, Hegel, Effect, fake
+    timers, and one page for the other TS tools) and "Non-TS tools" (a comparison page for TLA+, Quint, Stateright,
+    Coyote and the rest, next to the Lean, Dafny and Quint try-it pages).
