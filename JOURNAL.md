@@ -156,3 +156,9 @@ research on existing libraries, stateproof (https://github.com/HexaField/statepr
   - Idea: borrow from Effect.ts and Effection. Controlled async, so the explorer decides when each reply lands and can
     cancel cleanly; swappable services instead of hand-made real and explorable dependencies.
   - This journal.
+  - Found LemmaScript (https://github.com/midspiral/LemmaScript): TypeScript with contract comments, translated to Dafny
+    or Lean, proofs written by an LLM. It proves functions correct for every input; SpecCraft explores orders of events.
+    The two work together: LemmaScript for the pure core, SpecCraft for the coordination around it. Worth borrowing:
+    contracts as comments, one file list for local runs and CI.
+  - Comparison pages on speccraft.io: a "SpecCraft vs ..." group with LemmaScript and stateproof, including who builds
+    stateproof (HexaField, a side project, no activity since March 2026).
