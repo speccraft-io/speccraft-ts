@@ -178,3 +178,16 @@ research on existing libraries, stateproof (https://github.com/HexaField/statepr
     language-neutral spec versus specs in each language.
   - SpecCraft on Bluesky: @speccraft.bsky.social, with a 1500x500 banner. The speccraft.io header now links GitHub,
     npm, LinkedIn, Bluesky and zalizniak.com, all opening in a new tab.
+  - A second, wider search for TypeScript competitors (npm, GitHub, the web, and npm's own search through a
+    browser). Still nothing with the full combination. New closest finds, all from 2026: stifinder (a search core
+    that reports the failure needing the fewest departures from the expected schedule; its author's kilde/testing
+    runs real stream code through every pause and delivery order), effect-machine (bounded BFS over Effect
+    statecharts, about 53k downloads a month, async work not run during the search), and Bombadil from Antithesis
+    (TypeScript temporal properties, sampled against real web and terminal UIs). Also cloudfault, formalizr,
+    deja-dst, uneffect, weavecheck, quint-refinements, and typescript-actors from the P team (2017) as prior art
+    for controlling all async.
+  - Worth borrowing: order the search by fewest departures from a default schedule, named cost budgets for faults
+    (stifinder); a result that states whether it was complete; transition and guard coverage (effect-machine);
+    small temporal operator names and default properties (Bombadil).
+  - speccraft.io: pages for stifinder, effect-machine and Bombadil, the rest added to the All tools table, and the
+    positioning map split into two: TypeScript tools only, and all languages.
