@@ -162,3 +162,17 @@ research on existing libraries, stateproof (https://github.com/HexaField/statepr
     contracts as comments, one file list for local runs and CI.
   - Comparison pages on speccraft.io: a "SpecCraft vs ..." group with LemmaScript and stateproof, including who builds
     stateproof (HexaField, a side project, no activity since March 2026).
+  - Research on similar TypeScript tools found that corner 2 (a model checker as a library) is no longer empty in
+    TypeScript since 2026. Closest: pnueli (the same engine idea plus reductions and liveness, but model only),
+    Polygraph (an LLM derives the spec from code, then model-checks it), tla-precheck (a small TS DSL compiled to TLA+
+    and checked against its own interpreter). Also modality-ts, quint-connect-ts, tla-checker, and seeded-schedule
+    testers for Node (chronos, unflake, unluck, determined). None does all of SpecCraft's combination: a spec written
+    first in full TypeScript, conformance of real code over the whole state graph, and inline specs with async replies
+    in every order.
+  - Worth borrowing from them: steps that return several next states and declared reads and writes (pnueli), state
+    budgets and tiers (tla-precheck), grading invariants against mutated models (Polygraph).
+  - speccraft.io: dedicated pages for pnueli, Polygraph and tla-precheck, the All tools page and both diagrams updated,
+    a TL;DR at its top, and the "Thinking tools." banner on the home page.
+  - Idea: SpecCraft as the larger thing (the spec-first method, shared JSON formats, CLI, trace explorer) and
+    speccraft-ts as its first engine, with speccraft-go next. A Quint comparison page belongs to that level: one
+    language-neutral spec versus specs in each language.
