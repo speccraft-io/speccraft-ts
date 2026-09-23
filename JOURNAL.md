@@ -176,3 +176,5 @@ research on existing libraries, stateproof (https://github.com/HexaField/statepr
   - Idea: SpecCraft as the larger thing (the spec-first method, shared JSON formats, CLI, trace explorer) and
     speccraft-ts as its first engine, with speccraft-go next. A Quint comparison page belongs to that level: one
     language-neutral spec versus specs in each language.
+  - SpecCraft on Bluesky: @speccraft.bsky.social, with a 1500x500 banner. The speccraft.io header now links GitHub,
+    npm, LinkedIn, Bluesky and zalizniak.com, all opening in a new tab.
