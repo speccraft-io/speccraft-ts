@@ -2,7 +2,7 @@
 
 Write specs in TypeScript and check them exhaustively.
 
-Part of [SpecCraft](https://speccraft.io). On npm as [`@speccraft-io/core`](https://www.npmjs.com/package/@speccraft-io/core).
+Part of [SpecCraft](https://speccraft.io). On npm as [`@speccraft-io/core`](https://www.npmjs.com/package/@speccraft-io/core). History of ideas and milestones: [JOURNAL.md](JOURNAL.md).
 
 ## Development
 
@@ -28,7 +28,6 @@ pnpm build
 
 ## Roadmap
 
-- Ship `@speccraft-io/core@0.1.0` to npm.
 - Data nondeterminism: let an action's `effect` return multiple possible next states, not just one.
 - State fingerprinting instead of `JSON.stringify` keys, so larger state spaces don't hit memory walls as fast.
 - Conformance testing is in as `checkConformance`; next is checking a sampled subset of transitions for state spaces too large to walk exhaustively, and reporting more than just the first mismatch.
