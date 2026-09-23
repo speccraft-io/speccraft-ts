@@ -2,6 +2,8 @@
 
 Write specs in TypeScript and check them exhaustively.
 
+> **Work in progress, very early.** This is research and a proof of concept, not ready for use. APIs will change.
+
 Part of [SpecCraft](https://speccraft.io). On npm as [`@speccraft-io/core`](https://www.npmjs.com/package/@speccraft-io/core). History of ideas and milestones: [JOURNAL.md](JOURNAL.md).
 
 ## Development
