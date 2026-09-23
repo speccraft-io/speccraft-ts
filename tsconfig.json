@@ -2,6 +2,7 @@
   "extends": "./tsconfig.base.json",
   "compilerOptions": {
     "noEmit": true,
+    "lib": ["ES2023", "ESNext.Collection", "ESNext.Disposable", "DOM"],
     "declaration": true
   },
   "include": ["src", "examples"]
